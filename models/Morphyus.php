@@ -9,7 +9,6 @@
 
 namespace app\models;
 
-//require_once (\Yii::$app->basePath.'/phpmorphy/src/common.php');
 
 class Morphyus
 {
