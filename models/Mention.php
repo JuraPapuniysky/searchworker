@@ -16,7 +16,6 @@ use Yii;
  *
  * @property Subscription $subscription
  * @property Post $post
- * @property Repost[] $reposts
  */
 class Mention extends \yii\db\ActiveRecord
 {
@@ -74,8 +73,14 @@ class Mention extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getReposts()
+
+
+    public static function createNewMention($subscriptionId, $postId)
     {
-        return $this->hasMany(Repost::className(), ['mention_id' => 'id']);
+        $model = new Mention();
+        $model->post_id = $postId;
+        $model->subscription_id = $subscriptionId;
+        $model->is_notified = 1;
+        return $model->save;
     }
 }

@@ -14,11 +14,7 @@ class WorkerController extends Controller
 {
     public function actionIndex()
     {
-
            $worker = new Worker();
            $worker->work();
-
-
-
     }
 }
