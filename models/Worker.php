@@ -29,14 +29,13 @@ class Worker
     {
         $this->channel->queue_declare('tbot_message_analyze');
         $callback = function($msg) {
-
+          $this->search($msg);
         };
-
         $this->channel->basic_consume('tbot_message_analyze', '', false, true, false, false, $callback);
 
         while(count($this->channel->callbacks)) {
             $this->channel->wait();
-            $this->channel->basic_get();
+            $callback->bindTo($this);
         }
     }
 
@@ -44,7 +43,26 @@ class Worker
     {
         $task = json_decode($msg->body);
         if ($task->task_type == 'tbot_message_analyze'){
+            foreach ($this->subscriptions as $subscription) {
+                $searchEngine = new SearchEngine();
+                $begin_time = microtime(true);
+                echo "Indexing started: $begin_time\n";
 
+                // Индексирование //
+                $index = $searchEngine->makeIndex($task->task_data->post->post_data);
+
+                // Засекаем время конца //
+                $finish_time = microtime(true);
+                echo "Indexing finished: $finish_time\n";
+
+                // Результаты //
+                $total_time = $finish_time - $begin_time;
+                echo "Total time: $total_time\n";
+
+                //print_r($index);
+
+                echo $searchEngine->search($searchEngine->makeIndex($subscription->user_keywords), $index);
+            }
         }
     }
 }
